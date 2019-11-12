@@ -20,3 +20,5 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsof
     && cp -r /home/jovyan/.dotnet/tools/* /usr/local/bin/ \
     && cp -r /home/jovyan/.dotnet/tools/.store /usr/local/bin/.store \
 	&& rm -r /usr/share/dotnet/sdk/NuGetFallbackFolder
+	
+COPY cs_example.ipynb ./
