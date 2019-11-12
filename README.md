@@ -5,5 +5,8 @@ https://devblogs.microsoft.com/dotnet/net-core-with-juypter-notebooks-is-here-pr
 ## Run without volume:
 `docker run -it --rm -p 8888:8888 joshendriks/jupyter-dotnet`
 
-## Run with volume:
+## Run with volume on Windows:
 `docker run -it --rm -v %cd%:/home/jovyan/work -p 8888:8888 joshendriks/jupyter-dotnet`
+
+## Run with volume on Linux or MacOs:
+`docker run -it --rm -v $PWD:/home/jovyan/work -p 8888:8888 joshendriks/jupyter-dotnet`
