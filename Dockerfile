@@ -1,24 +1,47 @@
-FROM jupyter/base-notebook
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-bionic
+
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get -y install python3 python3-pip python3-dev ipython3
+	
+RUN pip3 install jupyterlab
+
+ARG NB_USER="jupyter"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER
+
+USER $NB_UID
+
+ENV HOME=/home/$NB_USER
+
+WORKDIR $HOME
+
+ENV PATH="${PATH}:$HOME/.dotnet/tools/"
+	
+RUN dotnet tool install -g --add-source "https://dotnet.myget.org/F/dotnet-try/api/v3/index.json" dotnet-interactive
+
+RUN dotnet-interactive jupyter install \ 
+	&& jupyter kernelspec list
+	
+RUN mkdir $HOME/.jupyter
+COPY ./jupyter_notebook_config.py $HOME/.jupyter/jupyter_notebook_config.py
+
+RUN mkdir $HOME/work
+COPY example.ipynb $HOME/.jupyter/work/example.ipynb
+
+# with default 'trydotnet' password
+# docker run -it -p 8888:8888 jc
+#
+# with token without password
+# docker run -it --env JUPYTER_PASSWORD_HASH=<somehash> -p 8888:8888 jc
+#
+# without password without token
+# docker run -it --env JUPYTER_NO_PASSWORD=true -p 8888:8888 jc
 
 USER root
+COPY start.sh /start.sh
+USER $NB_UID
 
-RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-	&& dpkg -i packages-microsoft-prod.deb \
-	&& rm packages-microsoft-prod.deb \
-	&& apt-get update \
-	&& apt-get install -y software-properties-common \
-    && add-apt-repository universe \
-	&& apt-get update \
-	&& apt-get install -y apt-transport-https \
-	&& apt-get update \
-	&& apt-get install -y dotnet-sdk-3.0 \
-    && apt-get install -y dotnet-sdk-2.1 \
-    && dotnet tool install -g dotnet-try \
-	&& /home/jovyan/.dotnet/tools/dotnet-try jupyter install \
-	&& jupyter kernelspec list \
-	&& fix-permissions /home/jovyan \
-    && cp -r /home/jovyan/.dotnet/tools/* /usr/local/bin/ \
-    && cp -r /home/jovyan/.dotnet/tools/.store /usr/local/bin/.store \
-	&& rm -r /usr/share/dotnet/sdk/NuGetFallbackFolder
-	
-COPY cs_example.ipynb ./
+CMD ["/start.sh"]
