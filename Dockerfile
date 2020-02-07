@@ -29,7 +29,7 @@ RUN mkdir $HOME/.jupyter
 COPY ./jupyter_notebook_config.py $HOME/.jupyter/jupyter_notebook_config.py
 
 RUN mkdir $HOME/work
-COPY example.ipynb $HOME/.jupyter/work/example.ipynb
+COPY example.ipynb $HOME/work/example.ipynb
 
 # with default 'trydotnet' password
 # docker run -it -p 8888:8888 jc
