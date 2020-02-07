@@ -42,6 +42,7 @@ COPY example.ipynb $HOME/work/example.ipynb
 
 USER root
 COPY start.sh /start.sh
+RUN chmod +x /start.sh
 USER $NB_UID
 
 CMD ["/start.sh"]
