@@ -6,6 +6,10 @@ RUN apt-get update \
 
 RUN pip3 install jupyterlab
 
+RUN apt-get -y install nodejs \
+    && pip3 install --upgrade jupyterlab-git \
+    && jupyter lab build
+
 ARG NB_USER="jupyter"
 ARG NB_UID="1000"
 ARG NB_GID="100"
@@ -32,6 +36,8 @@ RUN mkdir $HOME/work
 COPY example.ipynb $HOME/work/example.ipynb
 
 USER root
+# prevent git init on this level
+RUN mkdir $HOME/work/.git
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 USER $NB_UID
