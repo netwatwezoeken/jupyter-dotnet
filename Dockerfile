@@ -4,6 +4,8 @@ RUN apt-get update \
     && apt-get -y upgrade \
     && apt-get -y install python3 python3-pip python3-dev ipython3
 
+RUN apt-get -y install nmap 
+
 RUN pip3 install jupyterlab
 
 RUN apt-get -y install nodejs \
