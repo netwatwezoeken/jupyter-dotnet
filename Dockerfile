@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-bionic
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-focal
 
 RUN apt-get update \
     && apt-get -y upgrade \
