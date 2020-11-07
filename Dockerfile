@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-focal
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install python3 python3-pip python3-dev ipython3
+    && apt-get -y install python3 python3-pip python3-dev ipython3 nano julia
 
 RUN apt-get -y install nmap 
 
@@ -18,7 +18,7 @@ ARG NB_GID="100"
 
 RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER
 
-USER $NB_UID
+USER $NB_USER
 
 ENV HOME=/home/$NB_USER
 
@@ -28,8 +28,11 @@ ENV PATH="${PATH}:$HOME/.dotnet/tools/"
 
 RUN dotnet tool install -g --add-source "https://dotnet.myget.org/F/dotnet-try/api/v3/index.json" dotnet-interactive
 
-RUN dotnet-interactive jupyter install \ 
-    && jupyter kernelspec list
+RUN dotnet-interactive jupyter install
+
+RUN julia -e 'using Pkg; pkg"add IJulia; add Plots; add CSV; add DataFrames"'
+
+RUN jupyter kernelspec list
 
 RUN mkdir $HOME/.jupyter
 COPY ./jupyter_notebook_config.py $HOME/.jupyter/jupyter_notebook_config.py
@@ -38,10 +41,14 @@ RUN mkdir $HOME/work
 COPY example.ipynb $HOME/work/example.ipynb
 
 USER root
+
+RUN apt-get install sudo \
+    && usermod -aG sudo $NB_USER
+
 # prevent git init on this level
 RUN mkdir $HOME/work/.git
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-USER $NB_UID
+USER $NB_USER
 
 CMD ["/start.sh"]
