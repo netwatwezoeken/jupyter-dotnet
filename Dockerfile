@@ -1,14 +1,15 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1-focal
+FROM mcr.microsoft.com/dotnet/sdk:5.0-focal
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install python3 python3-pip python3-dev ipython3 nano julia plantuml \
+    && apt-get -y install python3 python3-pip python3-dev ipython3 nano plantuml \
 	&& cp /usr/share/plantuml/plantuml.jar /usr/local/bin/plantuml.jar
 
 RUN apt-get -y install nmap 
 
 RUN pip3 install jupyterlab
 RUN pip3 install iplantuml
+RUN pip3 install graphviz
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash
 
@@ -33,16 +34,16 @@ ENV PATH="${PATH}:$HOME/.dotnet/tools/"
 RUN dotnet tool install --global Microsoft.dotnet-interactive
 
 RUN dotnet-interactive jupyter install
-
-RUN julia -e 'using Pkg; pkg"add IJulia; add Plots; add CSV; add DataFrames"'
-
 RUN jupyter kernelspec list
 
 RUN mkdir $HOME/.jupyter
 COPY ./jupyter_notebook_config.py $HOME/.jupyter/jupyter_notebook_config.py
 
 RUN mkdir $HOME/work
-COPY example.ipynb $HOME/work/example.ipynb
+RUN mkdir $HOME/work/examples
+COPY csharp.ipynb $HOME/work/examples/csharp.ipynb
+COPY plantuml.ipynb $HOME/work/examples/plantuml.ipynb
+COPY graphviz.ipynb $HOME/work/examples/graphviz.ipynb
 
 USER root
 
