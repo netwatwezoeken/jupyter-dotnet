@@ -11,6 +11,7 @@ RUN pip3 install jupyterlab
 RUN pip3 install iplantuml
 RUN pip3 install graphviz
 RUN pip3 install matplotlib
+RUN pip install --upgrade ipykernel
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash
 
