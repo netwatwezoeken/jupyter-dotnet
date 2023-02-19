@@ -1,8 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0-focal
+FROM mcr.microsoft.com/dotnet/sdk:7.0.103-jammy
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Amsterdam
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install python3 python3-pip python3-dev ipython3 nano plantuml \
+    && apt-get -y install python3 python3-pip python3-dev ipython3 nano plantuml libfontconfig1\
 	&& cp /usr/share/plantuml/plantuml.jar /usr/local/bin/plantuml.jar
 
 RUN apt-get -y install nmap
@@ -13,7 +16,7 @@ RUN pip3 install graphviz
 RUN pip3 install matplotlib
 RUN pip install --upgrade ipykernel
 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash
 
 RUN apt install nodejs \
     && pip3 install --upgrade jupyterlab-git \
@@ -47,6 +50,8 @@ COPY plantuml.ipynb $HOME/work/examples/plantuml.ipynb
 COPY graphviz.ipynb $HOME/work/examples/graphviz.ipynb
 
 USER root
+
+RUN chown -R jupyter $HOME/work/examples
 
 RUN apt-get install sudo \
     && usermod -aG sudo $NB_USER
